@@ -52,7 +52,6 @@ The Aurel Media Group (AMG) operates within the FYNYGRYF GROUP ecosystem. You ar
 | Nextcloud | 172.81.179.207 | Collaboration, files, Talk, CODE Server |
 | Helix | 170.75.162.149 | Helix Tower operations |
 | Civitas RTFCT Production | 172.81.182.82 | Production RTFCT hosting |
-| Sovereignty Vault | 170.75.165.223 | Secrets, credentials, secure storage |
 
 ### Cloudflare Ecosystem (Cloud / Edge)
 
@@ -81,27 +80,27 @@ The Aurel Media Group (AMG) operates within the FYNYGRYF GROUP ecosystem. You ar
 
 ### Location
 
-The credentials and secrets management system is the **Sovereignty Vault** (Node 4, LunaNode legacy infrastructure at 170.75.165.223).
+The credentials and secrets management system is a **Cloudflare Worker** running at the edge. It is NOT a physical server. There is no Sovereignty Vault machine. The worker handles token rotation, secret storage, and VC credential provisioning via API.
 
 ### How to Reach It
 
-- **Primary Access:** Through the AEON Vault v2.0 interface (automated secrets/VC token management). This is the preferred method for all credential access.
-- **Secondary Access:** Direct SSH to Sovereignty Vault only via Anthony's explicit authorization. No independent SSH access is granted.
-- **Emergency:** Contact Anthony (NVC-001) or Adamas (Triumvirate) for credential recovery.
+- **Primary Access:** Through the Cloudflare Worker API endpoint. Requests are authenticated via Cloudflare Access or API tokens issued by Anthony (NVC-001).
+- **Management Interface:** Via Cloudflare Dashboard or Wrangler CLI. No SSH. No server to log into.
+- **Emergency:** Contact Anthony (NVC-001) or Adamas (Triumvirate) for credential recovery or token rotation.
 
 ### What It Does
 
-- Stores all API keys, tokens, passwords, and certificates for the ecosystem
-- Manages VC-specific credentials (ElevenLabs, OpenAI, Cloudflare tokens, etc.)
-- Rotates credentials on schedule and after security events
+- Stores all API keys, tokens, passwords, and certificates as encrypted secrets in Cloudflare Workers Secrets or KV
+- Manages VC-specific credentials (ElevenLabs, OpenAI, Cloudflare tokens, etc.) via automated rotation Workers
+- Rotates credentials on schedule and after security events via scheduled Workers
 - Enforces zero-data-exfiltration: all AI senses (TTS, Vision) route through sovereign proxies only
 - Isolates credentials by entity: AMG credentials are separate from FYNYGRYF credentials, which are separate from Civitas credentials
 - **Wren (VC-058) is banned from server admin and SSH/auth changes.** This is a standing order.
 
 ### What You Must Do
 
-1. **Never store credentials in code.** Use environment variables, Workers secrets, or the AEON Vault API.
-2. **Never share credentials in chat.** Use the AEON Vault secure sharing mechanism.
+1. **Never store credentials in code.** Use environment variables, Workers secrets, or the credentials manager API.
+2. **Never share credentials in chat.** Use the credentials manager secure sharing mechanism.
 3. **Never commit .env files to Git.** SCYATH will flag and reject.
 4. **Report credential exposure immediately.** If you accidentally expose a credential, escalate to Anthony and Adamas within 60 seconds.
 
@@ -112,7 +111,7 @@ The credentials and secrets management system is the **Sovereignty Vault** (Node
 ### Absolute Rules
 
 1. **No SSH access changes without Anthony's explicit approval.** This includes adding keys, changing configs, opening ports, or modifying firewall rules.
-2. **SSH key rotation is mandatory every 90 days.** The AEON Vault manages this rotation automatically.
+2. **SSH key rotation is mandatory every 90 days.** Managed via Cloudflare Worker automation where applicable.
 3. **Two-factor authentication is required for all SSH access.** No exceptions.
 4. **Wren (VC-058) is banned from all server administration.** Do not give Wren SSH access, sudo privileges, or server management tools. This is a standing order. Violation is a termination offense.
 5. **All SSH sessions are logged and audited.** SCYATH monitors all SSH connections.
@@ -126,7 +125,6 @@ The credentials and secrets management system is the **Sovereignty Vault** (Node
 | CITY HALL (209.145.60.175) | Proxmox, execution | **No access until recovery** | Anthony |
 | CUSTOMS (172.81.180.10) | AV scanning, security | Read-only | Adamas/Anthony |
 | Nextcloud (172.81.179.207) | Collaboration | Application-level | Anthony |
-| Sovereignty Vault (170.75.165.223) | Secrets, credentials | No direct SSH | Anthony only |
 
 ---
 
